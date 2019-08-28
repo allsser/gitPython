@@ -1,5 +1,6 @@
 from flask import Flask
 import random
+import requests
 app = Flask(__name__)
 
 @app.route('/')
@@ -32,7 +33,14 @@ def menu():
 
 @app.route('/lotto')
 def lotto():
-    winner = [3,5,12,13,33,39]
+    winner = []
+    url = 'https://dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=873'
+    response = requests.get(url)
+    res_dict = response.json()
+    
+    for i in range(1,7):
+        winner.append(res_dict[f'drwtNo{i}'])
+
     numbers = range(1,46)
     result = random.sample(numbers, 6)
 
@@ -59,3 +67,5 @@ def lotto():
         rank = '5등'
         
     return str(sorted(result)) + rank         # 원본은 건들이지 않고 정렬한다.
+
+    # (2) 해당 코드를 /lotto 함수에 적용
